@@ -6,6 +6,7 @@ const {
 	PREFIX,
 	getUptime,
 	PLUGINS,
+	getRam,
 } = require('../lib/')
 const { VERSION } = require('../config')
 bot.addCommand(
@@ -28,6 +29,7 @@ bot.addCommand(
 │ Date : ${date.toLocaleDateString('hi')}
 │ Version : ${VERSION}
 │ Plugins : ${PLUGINS.count}
+│ Ram : ${getRam()}
 │ Uptime : ${getUptime('t')}
 ╰────────────────
 ╭────────────────
@@ -49,5 +51,25 @@ bot.addCommand(
 		})
 		CMD_HELP += `╰────────────────`
 		return await message.sendMessage('```' + CMD_HELP + '```')
+	}
+)
+
+bot.addCommand(
+	{
+		pattern: 'list ?(.*)',
+		fromMe: true,
+		dontAddCommandList: true,
+	},
+	async (message, match) => {
+		let msg = ''
+		bot.commands.map(async (command, index) => {
+			if (
+				command.dontAddCommandList === false &&
+				command.pattern !== undefined
+			) {
+				msg += `${index} ${ctt(command.pattern)}\n${command.desc}\n\n`
+			}
+		})
+		await message.sendMessage('```' + msg.trim() + '```')
 	}
 )
